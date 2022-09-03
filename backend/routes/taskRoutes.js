@@ -7,7 +7,7 @@ const {
     deleteTask
 } = require('../controllers/taskController.js')
 
-router.route('/').get(getTasks).post(getTasks)
+router.route('/').get(getTasks).post(setTask)
 router.route('/:id').put(updateTask).delete(deleteTask)
 
 module.exports = router
