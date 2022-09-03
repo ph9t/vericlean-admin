@@ -3,4 +3,7 @@ const dotenv = require('dotenv').config()
 const port = process.env.PORT 
 
 const app = express()
+
+app.use('/api/tasks', require('./routes/taskRoutes.js'))
+
 app.listen(port, () => console.log(`Server started on port ${port}`))
