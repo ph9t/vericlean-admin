@@ -1,30 +1,56 @@
+const asyncHandler = require('express-async-handler')
+const Task = require('../models/taskModel.js')
+
 // @desc    Get scheduled tasks
 // @route   GET /api/tasks
 // @access  Private
-const getTasks = (req, res) => {
-    res.status(200).json({ message: 'Get tasks.' })
-}
+const getTasks = asyncHandler(async (req, res) => {
+    const tasks = await Task.find()
+    res.status(200).json(tasks)
+})
 
 // @desc    Create a scheduled task
 // @route   POST /api/tasks
 // @access  Private
-const setTask = (req, res) => {
-    res.status(200).json({ message: 'Set a task.' })
-}
+const setTask = asyncHandler( async (req, res) => {
+    if (!req.body.cleaning_tasks){
+        res.status(400)
+        throw new Error("'cleaning_tasks' field missing.")
+    }
+
+    const task = await Task.create({
+        cleaning_tasks: req.body.cleaning_tasks
+    })
+    res.status(200).json(task)
+})
 
 // @desc    Update a scheduled task
 // @route   PUT /api/tasks/:id
 // @access  Private
-const updateTask = (req, res) => {
-    res.status(200).json({ message: `Update task ${req.params.id}` })
-}
+const updateTask = asyncHandler(async (req, res) => {
+    const task = await Task.findById(req.params.id)
+    if (!task){
+        res.status(400)
+        throw new Error('Task not found in the database.')
+    }
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { 
+        new: true
+    })
+    res.status(200).json(updatedTask)
+})
 
 // @desc    Delete a scheduled task
 // @route   DELETE /api/tasks/:id
 // @access  Private
-const deleteTask = (req, res) => {
-    res.status(200).json({ message: `Delete task ${req.params.id}` })
-}
+const deleteTask = asyncHandler(async (req, res) => {
+    const task = await Task.findById(req.params.id)
+    if (!task){
+        res.status(400)
+        throw new Error('Task not found in the database.')
+    }
+    await task.remove()
+    res.status(200).json({ id: req.params.id })
+})
 
 module.exports = {
     getTasks,
