@@ -14,6 +14,7 @@ const cleanerSchema = mongoose.Schema({
         type: String,
         required: [true, 'Missing password.']
     },
+    phone: Number,
     contract_start: {
         type: Date,
         required: [true, 'Missing start contract date.']
