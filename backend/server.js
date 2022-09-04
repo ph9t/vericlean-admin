@@ -14,6 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/tasks', require('./routes/taskRoutes.js'))
+app.use('/api/cleaners', require('./routes/cleanerRoutes.js'))
 
 app.use(errorHandler)
 
