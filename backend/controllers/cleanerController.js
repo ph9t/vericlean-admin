@@ -48,9 +48,25 @@ const registerCleaner = asyncHandler(async (req, res) => {
 // @desc    Log in a cleaner
 // @route   POST /api/cleaners/login
 // @access  Public
-const loginCleaner = (req, res) => {
-    res.json({ message: 'login user'} )
-}
+const loginCleaner = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+    const cleaner = await Cleaner.findOne({email})
+    const payload = { id: cleaner._id }
+
+    if (cleaner && (await bcrypt.compare(password, cleaner.password))){
+        res.json({
+            _id: cleaner.id,
+            name: cleaner.name,
+            email: cleaner.email,
+            token: jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: '30d'
+            })
+        })
+    } else {
+        res.status(400)
+        throw new Error('Invalid credentials.')
+    }
+})
 
 // @desc    Get cleaner data
 // @route   Get /api/cleaners/me
