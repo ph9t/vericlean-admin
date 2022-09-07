@@ -7,7 +7,7 @@ const { adminProtect } = require('../middleware/headAuthMiddleware.js')
 
 router.post('/', adminProtect, registerCleaner)
 router.post('/login', loginCleaner)
-router.get('all', adminProtect, allCleaners)
+router.get('/all', adminProtect, allCleaners)
 router.get('/me', protect, getMe) // tentative
 
 module.exports = router
