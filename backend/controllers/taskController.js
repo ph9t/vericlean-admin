@@ -27,7 +27,9 @@ const setTask = asyncHandler( async (req, res) => {
     }
 
     const task = await Task.create({
-        cleaning_tasks: req.body.cleaning_tasks
+        cleaners_assigned: req.body.cleaners_assigned,
+        cleaning_tasks: req.body.cleaning_tasks,
+        task_head: req.head._id
     })
     res.status(200).json(task)
 })
