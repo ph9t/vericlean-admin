@@ -80,9 +80,15 @@ const loginCleaner = asyncHandler(async (req, res) => {
 // @desc    Get cleaner data
 // @route   Get /api/cleaners/me
 // @access  Private
-const getMe = (req, res) => {
-    res.json({ message: 'User data display' })
-}
+const getMe = asyncHandler(async (req, res) => {
+    const { _id, name, email } = await Cleaner.findById(req.cleaner._id)
+
+    res.status(200).json({
+        id: _id,
+        name,
+        email
+    })
+})
 
 module.exports = { 
     allCleaners,
