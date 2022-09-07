@@ -21,9 +21,10 @@ const getTasks = asyncHandler(async (req, res) => {
 // @route   POST /api/tasks
 // @access  Private
 const setTask = asyncHandler( async (req, res) => {
-    if (!req.body.cleaning_tasks){
+    if ( !req.body.cleaners_assigned || !req.body.cleaning_tasks || !req.body.task_head ||
+        !req.body.room || !req.body.floor || !req.body.start_time || !req.body.end_time ){
         res.status(400)
-        throw new Error("'cleaning_tasks' field missing.")
+        throw new Error("Missing required fields.")
     }
 
     const task = await Task.create({
