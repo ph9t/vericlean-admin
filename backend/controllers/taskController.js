@@ -1,11 +1,19 @@
 const asyncHandler = require('express-async-handler')
 const Task = require('../models/taskModel.js')
+const Head = require('../models/headModel.js')
 
 // @desc    Get scheduled tasks
 // @route   GET /api/tasks
 // @access  Private
 const getTasks = asyncHandler(async (req, res) => {
-    const tasks = await Task.find()
+    let tasks
+    
+    if (req.head){
+        tasks = await Task.find({ task_head: req.head._id })
+    }
+    else if (req.cleaner){
+        tasks = await Task.find({ cleaners_assigned: req.cleaner._id })
+    }
     res.status(200).json(tasks)
 })
 
