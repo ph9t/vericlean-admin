@@ -3,6 +3,15 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const Cleaner = require('../models/cleanerModel.js')
 
+
+// @desc    Get all Cleaners
+// @route   Get /api/cleaners/all
+// @access  Private
+const allCleaners = asyncHandler(async (req, res) => {
+    const cleaners = await Cleaner.find()
+    res.status(200).json(cleaners)
+})
+
 // @desc    Create a cleaner
 // @route   POST /api/cleaners
 // @access  ?
@@ -76,6 +85,7 @@ const getMe = (req, res) => {
 }
 
 module.exports = { 
+    allCleaners,
     registerCleaner, 
     loginCleaner,
     getMe
