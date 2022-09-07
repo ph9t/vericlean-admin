@@ -39,10 +39,25 @@ const setTask = asyncHandler( async (req, res) => {
 // @access  Private
 const updateTask = asyncHandler(async (req, res) => {
     const task = await Task.findById(req.params.id)
+
     if (!task){
         res.status(400)
         throw new Error('Task not found in the database.')
     }
+    
+    const head = await Head.findById(req.head._id)
+
+    if (!head){
+        res.status(401)
+        throw new Error('Head Household not found.')
+    }
+
+    // cleaners = task.cleaner_assigned.map(x => x.toString())
+    if (task.task_head.toString() !== head.id){
+        res.status(401)
+        throw new Error('User not authorized.')
+    } 
+
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { 
         new: true
     })
@@ -54,10 +69,25 @@ const updateTask = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteTask = asyncHandler(async (req, res) => {
     const task = await Task.findById(req.params.id)
+
     if (!task){
         res.status(400)
         throw new Error('Task not found in the database.')
     }
+
+    const head = await Head.findById(req.head._id)
+
+    if (!head){
+        res.status(401)
+        throw new Error('Head Household not found.')
+    }
+
+    // cleaners = task.cleaner_assigned.map(x => x.toString())
+    if (task.task_head.toString() !== head.id){
+        res.status(401)
+        throw new Error('User not authorized.')
+    } 
+
     await task.remove()
     res.status(200).json({ id: req.params.id })
 })
