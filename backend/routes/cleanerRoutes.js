@@ -2,9 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 const { registerCleaner, loginCleaner, getMe } = require('../controllers/cleanerController.js')
+const { protect } = require('../middleware/authMiddleware.js')
+const { adminProtect } = require('../middleware/headAuthMiddleware.js')
 
-router.post('/', registerCleaner)
+router.post('/', adminProtect, registerCleaner)
 router.post('/login', loginCleaner)
-router.get('/me', getMe)
+router.get('/me', protect, getMe) // tentative
 
 module.exports = router
