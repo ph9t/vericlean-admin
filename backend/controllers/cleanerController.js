@@ -60,9 +60,9 @@ const registerCleaner = asyncHandler(async (req, res) => {
 const loginCleaner = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     const cleaner = await Cleaner.findOne({email})
-    const payload = { id: cleaner._id }
 
     if (cleaner && (await bcrypt.compare(password, cleaner.password))){
+        const payload = { _id: cleaner._id, role: cleaner.role }
         res.json({
             _id: cleaner.id,
             name: cleaner.name,
