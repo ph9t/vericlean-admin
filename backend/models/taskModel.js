@@ -14,6 +14,22 @@ const taskSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Missing field: task_head'],
         ref: 'Head'
+    },
+    room: {
+        type: Number,
+        required: [true, 'Missing field: room']
+    },
+    floor: {
+        type: Number,
+        required: [true, 'Missing field: floor']
+    },
+    start_time: {
+        type: Date,
+        required: [true, 'Missing field: start_time']
+    },
+    end_time: {
+        type: Date,
+        required: [true, 'Missing field: start_time']
     }
 }, {
     timestamps: true
