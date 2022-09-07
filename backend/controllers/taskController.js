@@ -30,7 +30,11 @@ const setTask = asyncHandler( async (req, res) => {
     const task = await Task.create({
         cleaners_assigned: req.body.cleaners_assigned,
         cleaning_tasks: req.body.cleaning_tasks,
-        task_head: req.head._id
+        task_head: req.head._id,
+        room: req.body.room,
+        floor: req.body.floor,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time
     })
     res.status(200).json(task)
 })
