@@ -12,6 +12,7 @@
   "author": "Angel Bruce G. Jimenez",
   "license": "MIT",
   "dependencies": {
+    "agora-access-token": "^2.0.4",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "dotenv": "^16.0.2",
