@@ -6,6 +6,11 @@ const taskSchema = mongoose.Schema({
         required: true,
         ref: 'Cleaner'
     }],
+    cleaner_log_ids: [{
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, 'Missing field: cleaner_logs'],
+        ref: 'CleanerLog'
+    }],
     cleaning_tasks: {
         type: String,
         required: [true, 'Missing field: cleaning_tasks']
