@@ -88,63 +88,64 @@ const setTask = asyncHandler(async (req, res) => {
 // @route   PUT /api/tasks/:id
 // @access  Private
 const updateTask = asyncHandler(async (req, res) => {
-    const task = await Task.findById(req.params.id)
+  const task = await Task.findById(req.params.id);
 
-    if (!task){
-        res.status(400)
-        throw new Error('Task not found in the database.')
-    }
-    
-    const head = await Head.findById(req.head._id)
+  if (!task) {
+    res.status(400);
+    throw new Error("Task not found in the database.");
+  }
 
-    if (!head){
-        res.status(401)
-        throw new Error('Head Household not found.')
-    }
+  const head = await Head.findById(req.head._id);
 
-    // cleaners = task.cleaner_assigned.map(x => x.toString())
-    if (task.task_head.toString() !== head.id){
-        res.status(401)
-        throw new Error('User not authorized.')
-    } 
+  if (!head) {
+    res.status(401);
+    throw new Error("Head Household not found.");
+  }
 
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { 
-        new: true
-    })
-    res.status(200).json(updatedTask)
-})
+  // cleaners = task.cleaner_assigned.map(x => x.toString())
+  if (task.task_head.toString() !== head.id) {
+    res.status(401);
+    throw new Error("User not authorized.");
+  }
+
+  const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  res.status(200).json(updatedTask);
+});
 
 // @desc    Delete a scheduled task
 // @route   DELETE /api/tasks/:id
 // @access  Private
 const deleteTask = asyncHandler(async (req, res) => {
-    const task = await Task.findById(req.params.id)
+  const task = await Task.findById(req.params.id);
 
-    if (!task){
-        res.status(400)
-        throw new Error('Task not found in the database.')
-    }
+  if (!task) {
+    res.status(400);
+    throw new Error("Task not found in the database.");
+  }
 
-    const head = await Head.findById(req.head._id)
+  const head = await Head.findById(req.head._id);
 
-    if (!head){
-        res.status(401)
-        throw new Error('Head Household not found.')
-    }
+  if (!head) {
+    res.status(401);
+    throw new Error("Head Household not found.");
+  }
 
-    // cleaners = task.cleaner_assigned.map(x => x.toString())
-    if (task.task_head.toString() !== head.id){
-        res.status(401)
-        throw new Error('User not authorized.')
-    } 
+  // cleaners = task.cleaner_assigned.map(x => x.toString())
+  if (task.task_head.toString() !== head.id) {
+    res.status(401);
+    throw new Error("User not authorized.");
+  }
 
-    await task.remove()
-    res.status(200).json({ id: req.params.id })
-})
+  await task.remove();
+  res.status(200).json({ id: req.params.id });
+});
 
 module.exports = {
-    getTasks,
-    setTask,
-    updateTask,
-    deleteTask
-}
+  getTasks,
+  setTask,
+  updateTask,
+  deleteTask,
+};
