@@ -8,7 +8,7 @@ const Cleaner = require('../models/cleanerModel.js')
 // @route   Get /api/cleaners/all
 // @access  Private
 const allCleaners = asyncHandler(async (req, res) => {
-    const cleaners = await Cleaner.find()
+    const cleaners = await Cleaner.find().select('-password')
     res.status(200).json(cleaners)
 })
 
