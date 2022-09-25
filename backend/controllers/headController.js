@@ -66,4 +66,6 @@ const loginHead = asyncHandler(async (req, res) => {
   }
 });
 
+const headMe = asyncHandler(async (req, res) => {});
+
 module.exports = { loginHead, registerHead, headMe };
