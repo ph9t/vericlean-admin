@@ -1,5 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const Task = require("../models/taskModel.js");
+const Head = require("../models/headModel.js");
+const CleanerLog = require("../models/cleanerLogModel.js");
+const Video = require("../models/videoModel.js");
+const QuickR = require("../models/qrModel.js");
 // @desc    Get scheduled tasks
 // @route   GET /api/tasks
 // @access  Private
@@ -17,24 +21,68 @@ const getTasks = asyncHandler(async (req, res) => {
 // @desc    Create a scheduled task
 // @route   POST /api/tasks
 // @access  Private
-const setTask = asyncHandler( async (req, res) => {
-    if ( !req.body.cleaners_assigned || !req.body.cleaning_tasks || !req.body.task_head ||
-        !req.body.room || !req.body.floor || !req.body.start_time || !req.body.end_time ){
-        res.status(400)
-        throw new Error("Missing required fields.")
-    }
+const setTask = asyncHandler(async (req, res) => {
+  if (
+    !req.body.cleaners_assigned ||
+    !req.body.cleaning_tasks ||
+    !req.body.task_head ||
+    !req.body.room ||
+    !req.body.floor ||
+    !req.body.start_time ||
+    !req.body.end_time
+  ) {
+    res.status(400);
+    throw new Error("Missing required fields.");
+  }
 
-    const task = await Task.create({
-        cleaners_assigned: req.body.cleaners_assigned,
-        cleaning_tasks: req.body.cleaning_tasks,
-        task_head: req.head._id,
-        room: req.body.room,
-        floor: req.body.floor,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time
-    })
-    res.status(200).json(task)
-})
+  // console.log(req.body.cleaners_assigned.length)
+  // console.log(new Date(req.body.start_time).toString())
+
+  const task = await Task.create({
+    cleaners_assigned: req.body.cleaners_assigned,
+    cleaning_tasks: req.body.cleaning_tasks,
+    task_head: req.head._id,
+    room: req.body.room,
+    floor: req.body.floor,
+    start_time: req.body.start_time,
+    end_time: req.body.end_time,
+  });
+
+  // check if only a single cleaner is assigned or otherwise
+  let cleaner_ids = [];
+  if (
+    typeof req.body.cleaners_assigned === "string" ||
+    req.body.cleaners_assigned instanceof String
+  ) {
+    cleaner_ids.push(req.body.cleaners_assigned);
+  } else {
+    cleaner_ids.push(...req.body.cleaners_assigned);
+  }
+
+  // create CleanerLog documents for each Cleaners assigned in a task
+  let cleaner_log_ids = [];
+  for (let i = 0; i < cleaner_ids.length; i++) {
+    const video = await Video.create({ cleaner_id: cleaner_ids[i] });
+    const quickr = await QuickR.create({ cleaner_id: cleaner_ids[i] });
+    const cleaner_log = await CleanerLog.create({
+      cleaner_id: cleaner_ids[i],
+      scheduled_task_id: task._id,
+      video_id: video._id,
+      qr_log_id: quickr._id,
+    });
+
+    cleaner_log_ids.push(cleaner_log.id);
+  }
+
+  finalTask = await Task.findByIdAndUpdate(
+    task.id,
+    {
+      cleaner_log_ids: cleaner_log_ids,
+    },
+    { new: true }
+  );
+  res.status(200).json(finalTask);
+});
 
 // @desc    Update a scheduled task
 // @route   PUT /api/tasks/:id
