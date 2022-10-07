@@ -9,13 +9,21 @@ const cleanerProtect = asyncHandler(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (decoded.role === "cleaner") {
-      req.cleaner = await Cleaner.findById(decoded._id).select("-password");
+      const cleaner = await Cleaner.findOne({ email: decoded.email }).select(
+        "-password"
+      );
+
+      if (!cleaner) {
+        throw new Error();
+      }
+      req.cleaner = cleaner;
+      
       next();
-    } else {
+    } catch (error) {
       res.status(401);
       throw new Error("User not authorized.");
     }
