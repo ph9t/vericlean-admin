@@ -17,7 +17,7 @@ const scanQr = asyncHandler(async (req, res) => {
 
   const cleanerLog = await CleanerLog.find({
     scheduled_task_id: req.params.task_id,
-    cleaner_id: req.cleaner.id
+    cleaner_id: req.cleaner.id,
   });
 
   if (!cleanerLog) {
@@ -46,7 +46,7 @@ const getQr = asyncHandler(async (req, res) => {
 
   const cleanerLog = await CleanerLog.find({
     scheduled_task_id: req.params.task_id,
-    cleaner_id: req.cleaner.id
+    cleaner_id: req.cleaner.id,
   });
 
   if (!cleanerLog) {
@@ -56,11 +56,11 @@ const getQr = asyncHandler(async (req, res) => {
     );
   }
 
-  const quickR = await QuickR.findById(cleanerLog[0].qr_log_id)
-  res.status(200).json(quickR)
-})
+  const quickR = await QuickR.findById(cleanerLog[0].qr_log_id);
+  res.status(200).json(quickR);
+});
 
 module.exports = {
   scanQr,
-  getQr
+  getQr,
 };
