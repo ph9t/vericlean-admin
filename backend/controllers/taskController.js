@@ -4,6 +4,7 @@ const Head = require("../models/headModel.js");
 const CleanerLog = require("../models/cleanerLogModel.js");
 const Video = require("../models/videoModel.js");
 const QuickR = require("../models/qrModel.js");
+const Feedback = require("../models/feedbackModel.js");
 
 // @desc    Get scheduled tasks
 // @route   GET /api/tasks
@@ -26,7 +27,6 @@ const setTask = asyncHandler(async (req, res) => {
   if (
     !req.body.cleaners_assigned ||
     !req.body.cleaning_tasks ||
-    !req.body.task_head ||
     !req.body.room ||
     !req.body.floor ||
     !req.body.start_time ||
@@ -47,6 +47,12 @@ const setTask = asyncHandler(async (req, res) => {
     floor: req.body.floor,
     start_time: req.body.start_time,
     end_time: req.body.end_time,
+  });
+
+  // create feedback document
+  const feedback = await Feedback.create({
+    scheduled_task_id: task.id,
+    head_household_id: req.head._id,
   });
 
   // check if only a single cleaner is assigned or otherwise
