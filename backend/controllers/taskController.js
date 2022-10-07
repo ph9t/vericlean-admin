@@ -4,15 +4,16 @@ const Head = require("../models/headModel.js");
 const CleanerLog = require("../models/cleanerLogModel.js");
 const Video = require("../models/videoModel.js");
 const QuickR = require("../models/qrModel.js");
+
 // @desc    Get scheduled tasks
 // @route   GET /api/tasks
 // @access  Private
 const getTasks = asyncHandler(async (req, res) => {
   let tasks;
 
-  if (req.head) {
+  if (req.who === 'head') {
     tasks = await Task.find({ task_head: req.head._id });
-  } else if (req.cleaner) {
+  } else if (req.who === 'cleaner') {
     tasks = await Task.find({ cleaners_assigned: req.cleaner._id });
   }
   res.status(200).json(tasks);
