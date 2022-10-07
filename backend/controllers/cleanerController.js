@@ -67,24 +67,28 @@ const registerCleaner = asyncHandler(async (req, res) => {
 // @route   POST /api/cleaners/login
 // @access  Public
 const loginCleaner = asyncHandler(async (req, res) => {
-    const { email, password } = req.body
-    const cleaner = await Cleaner.findOne({email})
+  const { email, password } = req.body;
+  const cleaner = await Cleaner.findOne({ email });
 
-    if (cleaner && (await bcrypt.compare(password, cleaner.password))){
-        const payload = { _id: cleaner._id, role: cleaner.role }
-        res.json({
-            _id: cleaner.id,
-            name: cleaner.name,
-            email: cleaner.email,
-            token: jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: '30d'
-            })
-        })
-    } else {
-        res.status(400)
-        throw new Error('Invalid credentials for a Cleaner.')
-    }
-})
+  if (!cleaner){
+    res.status(400);
+    throw new Error("Cleaner does not exist.")
+  }
+
+  if (cleaner && (await bcrypt.compare(password, cleaner.password))) {
+    const payload = { email: cleaner.email };
+    
+    res.json({
+      name: cleaner.name,
+      token: jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      }),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid credentials for a Cleaner.");
+  }
+});
 
 // @desc    Get cleaner data
 // @route   Get /api/cleaners/me
