@@ -27,6 +27,7 @@ app.use("/api/heads", require("./routes/headRoutes.js"));
 app.use("/api/rtc", require("./routes/rtcRoutes.js"));
 app.use("/api/qr", require("./routes/qrRoutes.js"));
 app.use("/api/video", require("./routes/videoRoutes.js"));
+app.use("/api/feedbacks", require("./routes/feedbackRoutes.js"))
 
 app.use(errorHandler);
 
