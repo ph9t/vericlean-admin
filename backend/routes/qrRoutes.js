@@ -3,7 +3,6 @@ const router = express.Router()
 const { cleanerProtect } = require('../middleware/cleanerAuthMiddleware.js')
 const { scanQr, getQr } = require('../controllers/qrController.js')
 
-router.post('/:task_id', cleanerProtect, scanQr)
-router.get('/:task_id', cleanerProtect, getQr)
+router.route('/:task_id').get(cleanerProtect, getQr).put(cleanerProtect, scanQr)
 
 module.exports = router
