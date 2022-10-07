@@ -51,11 +51,9 @@ const loginHead = asyncHandler(async (req, res) => {
   const head = await Head.findOne({ email });
 
   if (head && (await bcrypt.compare(password, head.password))) {
-    const payload = { _id: head._id, role: head.role };
+    const payload = { email: head.email };
     res.json({
-      _id: head.id,
       name: head.name,
-      email: head.email,
       token: jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "30d",
       }),
