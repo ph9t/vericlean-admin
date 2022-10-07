@@ -1,19 +1,22 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const qrSchema = mongoose.Schema({
+const qrSchema = mongoose.Schema(
+  {
     cleaner_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Cleaner'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Cleaner",
     },
     scan_time_in: {
-        type: Date,
+      type: Date,
     },
     scan_time_out: {
-        type: Date,
+      type: Date,
     },
-}, {
-    timestamp: true
-})
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('QuickR', qrSchema)
+module.exports = mongoose.model("QuickR", qrSchema);
