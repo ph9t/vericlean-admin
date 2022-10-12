@@ -20,7 +20,10 @@ const taskSchema = mongoose.Schema(
       type: String,
       required: [true, "Missing field: cleaning_tasks"],
     },
-    task_head: {
+    more_instructions: {
+      type: String,
+    },
+    head_household_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Missing field: task_head"],
       ref: "Head",
