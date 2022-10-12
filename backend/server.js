@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 
@@ -27,7 +28,18 @@ app.use("/api/heads", require("./routes/headRoutes.js"));
 app.use("/api/rtc", require("./routes/rtcRoutes.js"));
 app.use("/api/qr", require("./routes/qrRoutes.js"));
 app.use("/api/video", require("./routes/videoRoutes.js"));
-app.use("/api/feedbacks", require("./routes/feedbackRoutes.js"))
+app.use("/api/feedbacks", require("./routes/feedbackRoutes.js"));
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, "../", "frontend", "build", "index.html")
+    )
+  );
+} else {
+  app.get("/", (req, res) => res.send("Set to production."));
+}
 
 app.use(errorHandler);
 
