@@ -13,9 +13,9 @@ const signToken = (payload) => {
 // @route   POST /api/heads/register
 // @access  Public
 const registerHead = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { first_name, last_name, email, password, role } = req.body;
 
-  if (!name || !email || !password || !role) {
+  if (!first_name || !last_name || !email || !password || !role) {
     res.status(400);
     throw new Error("Missing required fields.");
   }
@@ -31,17 +31,20 @@ const registerHead = asyncHandler(async (req, res) => {
   const hashedPass = await bcrypt.hash(password, salt);
 
   const head = await Head.create({
-    name,
+    first_name,
+    last_name,
     email,
     password: hashedPass,
-    role,
+    role: role,
   });
+
+  const payload = { email: head.email };
 
   if (head) {
     res.status(201).json({
-      _id: head.id,
-      name: head.name,
-      email: head.email,
+      first_name: head.first_name,
+      last_name: head.last_name,
+      token: signToken(payload),
     });
   } else {
     res.status(400);
@@ -58,11 +61,11 @@ const loginHead = asyncHandler(async (req, res) => {
 
   if (head && (await bcrypt.compare(password, head.password))) {
     const payload = { email: head.email };
+
     res.json({
-      name: head.name,
-      token: jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "30d",
-      }),
+      first_name: head.first_name,
+      last_name: head.last_name,
+      token: signToken(payload),
     });
   } else {
     res.status(400);
