@@ -15,11 +15,19 @@ const allCleaners = asyncHandler(async (req, res) => {
 // @route   POST /api/cleaners
 // @access  ?
 const registerCleaner = asyncHandler(async (req, res) => {
-  const { name, email, password, contract_start, contract_end, role } =
-    req.body;
+  const {
+    first_name,
+    last_name,
+    email,
+    password,
+    contract_start,
+    contract_end,
+    role,
+  } = req.body;
 
   if (
-    !name ||
+    !first_name ||
+    !last_name ||
     !email ||
     !password ||
     !contract_start ||
@@ -31,6 +39,7 @@ const registerCleaner = asyncHandler(async (req, res) => {
   }
 
   const cleanerExists = await Cleaner.findOne({ email });
+
   if (cleanerExists) {
     res.status(400);
     throw new Error("Cleaner already exists.");
@@ -40,7 +49,8 @@ const registerCleaner = asyncHandler(async (req, res) => {
   const hashedPass = await bcrypt.hash(password, salt);
 
   const cleaner = await Cleaner.create({
-    name,
+    first_name,
+    last_name,
     email,
     password: hashedPass,
     contract_start,
@@ -56,7 +66,11 @@ const registerCleaner = asyncHandler(async (req, res) => {
     // })
     res
       .status(201)
-      .json({ message: `Account for cleaner ${name} had been created.` });
+      .json({
+        message: `Account for cleaner ${
+          first_name + " " + last_name
+        } had been created.`,
+      });
   } else {
     res.status(400);
     throw new Error("Unable to create an account.");
@@ -70,16 +84,17 @@ const loginCleaner = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const cleaner = await Cleaner.findOne({ email });
 
-  if (!cleaner){
+  if (!cleaner) {
     res.status(400);
-    throw new Error("Cleaner does not exist.")
+    throw new Error("Cleaner does not exist.");
   }
 
   if (cleaner && (await bcrypt.compare(password, cleaner.password))) {
     const payload = { email: cleaner.email };
-    
+
     res.json({
-      name: cleaner.name,
+      first_name: cleaner.first_name,
+      last_name: cleaner.last_name,
       token: jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "30d",
       }),
@@ -94,11 +109,14 @@ const loginCleaner = asyncHandler(async (req, res) => {
 // @route   Get /api/cleaners/me
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, name, email } = await Cleaner.findById(req.cleaner._id);
+  const { _id, first_name, last_name, email } = await Cleaner.findById(
+    req.cleaner._id
+  );
 
   res.status(200).json({
     id: _id,
-    name,
+    first_name,
+    last_name,
     email,
   });
 });
