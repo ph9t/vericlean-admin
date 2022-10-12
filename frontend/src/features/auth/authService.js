@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_HEAD = "http://localhost:8000/api/heads/";
+const API_HEAD = "/api/heads/";
 
 const register = async (headData) => {
   const response = await axios.post(API_HEAD + "register", headData);
