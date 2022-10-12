@@ -3,6 +3,12 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const Head = require("../models/headModel.js");
 
+const signToken = (payload) => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
 // @desc    Register Head Household
 // @route   POST /api/heads/register
 // @access  Public
