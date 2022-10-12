@@ -13,7 +13,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
     throw new Error("Missing required field: 'video_path'.");
   }
 
-  const cleanerLog = await CleanerLog.find({
+  const cleanerLog = await CleanerLog.findOne({
     scheduled_task_id: req.params.id,
     cleaner_id: req.cleaner._id,
   });
@@ -25,7 +25,8 @@ const uploadVideo = asyncHandler(async (req, res) => {
     );
   } 
 
-  const video = await Video.findById(cleanerLog[0].video_id);
+
+  const video = await Video.findById(cleanerLog.video_id);
   // refactor this part,, ok??
   const video_path = video.video_path;
   video_path.push(req.body.video_path);
@@ -33,7 +34,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       await Video.findByIdAndUpdate(
-        cleanerLog[0].video_id,
+        cleanerLog.video_id,
         { video_path: video_path },
         { new: true }
       )
