@@ -13,7 +13,7 @@ const getTasks = asyncHandler(async (req, res) => {
   let tasks;
 
   if (req.who === 'head') {
-    tasks = await Task.find({ task_head: req.head._id });
+    tasks = await Task.find({ head_household_id: req.head._id });
   } else if (req.who === 'cleaner') {
     tasks = await Task.find({ cleaners_assigned: req.cleaner._id });
   }
@@ -27,6 +27,7 @@ const setTask = asyncHandler(async (req, res) => {
   if (
     !req.body.cleaners_assigned ||
     !req.body.cleaning_tasks ||
+    // !req.body.task_head ||
     !req.body.room ||
     !req.body.floor ||
     !req.body.start_time ||
@@ -42,7 +43,8 @@ const setTask = asyncHandler(async (req, res) => {
   const task = await Task.create({
     cleaners_assigned: req.body.cleaners_assigned,
     cleaning_tasks: req.body.cleaning_tasks,
-    task_head: req.head._id,
+    head_household_id: req.head._id,
+    more_instructions: req.body.more_instructions,
     room: req.body.room,
     floor: req.body.floor,
     start_time: req.body.start_time,
@@ -110,7 +112,7 @@ const updateTask = asyncHandler(async (req, res) => {
   }
 
   // cleaners = task.cleaner_assigned.map(x => x.toString())
-  if (task.task_head.toString() !== head.id) {
+  if (task.head_household_id.toString() !== head.id) {
     res.status(401);
     throw new Error("User not authorized.");
   }
@@ -141,7 +143,7 @@ const deleteTask = asyncHandler(async (req, res) => {
   }
 
   // cleaners = task.cleaner_assigned.map(x => x.toString())
-  if (task.task_head.toString() !== head.id) {
+  if (task.head_household_id.toString() !== head.id) {
     res.status(401);
     throw new Error("User not authorized.");
   }
