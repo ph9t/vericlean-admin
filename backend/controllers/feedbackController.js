@@ -7,7 +7,7 @@ const getFeedback = asyncHandler(async (req, res) => {
     throw new Error("Route requires 'id' for the task.");
   }
 
-  const feedback = await Feedback.find({ scheduled_task_id: req.params.id });
+  const feedback = await Feedback.findOne({ scheduled_task_id: req.params.id }); // findOne??
 
   if (!feedback) {
     res.status(400);
