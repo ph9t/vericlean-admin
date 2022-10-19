@@ -106,7 +106,7 @@ const allCleaners = asyncHandler(async (req, res) => {
 const getStats = asyncHandler(async (req, res) => {
   const cleanerCount = await Cleaner.countDocuments();
 
-  res.status(400).json({
+  res.status(200).json({
     cleanerCount,
   });
 });
