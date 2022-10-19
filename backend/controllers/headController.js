@@ -73,6 +73,61 @@ const loginHead = asyncHandler(async (req, res) => {
   }
 });
 
-const headMe = asyncHandler(async (req, res) => {});
+const getDetails = asyncHandler(async (req, res) => {
+  const { first_name, last_name, email, role, createdAt, updatedAt } = req.head;
 
-module.exports = { loginHead, registerHead, headMe };
+  res.status(200).json({
+    first_name,
+    last_name,
+    email,
+    role,
+    created_at: createdAt,
+    updated_at: updatedAt,
+  });
+});
+
+const updateHead = asyncHandler(async (req, res) => {
+  // const head = await Head.findById(req.head.id);
+  // console.log(head);
+
+  // if (!head) {
+  //   res.status(400);
+  //   throw new Error("Head Household not found in the database.");
+  // }
+
+  const newBody = ({ first_name, last_name } = req.body);
+
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    newBody.password = await bcrypt.hash(req.body.password, salt);
+  }
+
+  const updatedHead = await Head.findByIdAndUpdate(req.head.id, newBody, {
+    new: true,
+  });
+
+  res.status(200).json({
+    first_name: updatedHead.first_name,
+    last_name: updatedHead.last_name,
+  });
+});
+
+const deleteHead = asyncHandler(async (req, res) => {
+  // const head = await Head.findById(req.head.id);
+
+  // if (!head) {
+  //   res.status(400);
+  //   throw new Error("Cleaner not found in the database.");
+  // }
+  const head_id = req.head.id;
+  await req.head.remove();
+  res.status(200).json({ id: head_id });
+});
+
+module.exports = {
+  registerHead,
+  loginHead,
+  getDetails,
+  updateHead,
+  deleteHead,
+};
