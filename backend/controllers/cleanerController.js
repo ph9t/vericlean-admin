@@ -3,14 +3,6 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const Cleaner = require("../models/cleanerModel.js");
 
-// @desc    Get all Cleaners
-// @route   Get /api/cleaners/all
-// @access  Private
-const allCleaners = asyncHandler(async (req, res) => {
-  const cleaners = await Cleaner.find().select("-password");
-  res.status(200).json(cleaners);
-});
-
 // @desc    Create a cleaner
 // @route   POST /api/cleaners
 // @access  ?
@@ -105,25 +97,103 @@ const loginCleaner = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get cleaner data
-// @route   Get /api/cleaners/me
+// @desc    Get all Cleaners
+// @route   Get /api/cleaners/all
 // @access  Private
-const getMe = asyncHandler(async (req, res) => {
-  const { _id, first_name, last_name, email } = await Cleaner.findById(
-    req.cleaner._id
-  );
+const allCleaners = asyncHandler(async (req, res) => {
+  const cleaners = await Cleaner.find().select("-password");
+  res.status(200).json(cleaners);
+});
 
-  res.status(200).json({
-    id: _id,
-    first_name,
-    last_name,
-    email,
+const getStats = asyncHandler(async (req, res) => {
+  const cleanerCount = await Cleaner.countDocuments();
+
+  res.status(400).json({
+    cleanerCount,
   });
 });
 
+// @desc    Get cleaner data
+// @route   Get /api/cleaners/me
+// @access  Private
+const getDetails = asyncHandler(async (req, res) => {
+  const {
+    first_name,
+    last_name,
+    email,
+    contract_start,
+    contract_end,
+    role,
+    createdAt,
+    updatedAt,
+  } = req.cleaner;
+
+  res.status(200).json({
+    first_name,
+    last_name,
+    email,
+    contract_start,
+    contract_end,
+    role,
+    created_at: createdAt,
+    updated_at: updatedAt,
+  });
+});
+
+// @desc    Update Cleaner account
+// @route   PUT /api/cleaners/id
+// @access  Private
+const updateCleaner = asyncHandler(async (req, res) => {
+  const cleaner = await Cleaner.findById(req.params.id);
+
+  if (!cleaner) {
+    res.status(400);
+    throw new Error("Cleaner not found in the database.");
+  }
+
+  const newBody = ({ first_name, last_name, contract_start, contract_end } =
+    req.body);
+
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    newBody.password = await bcrypt.hash(req.body.password, salt);
+  }
+
+  const updatedCleaner = await Cleaner.findByIdAndUpdate(
+    req.params.id,
+    newBody,
+    { new: true }
+  );
+
+  res.status(200).json({
+    first_name: updatedCleaner.first_name,
+    last_name: updatedCleaner.last_name,
+    contract_start: updatedCleaner.contract_start,
+    contract_end: updatedCleaner.contract_end,
+  });
+});
+
+// @desc    Delete Cleaner account
+// @route   PUT /api/cleaners/id
+// @access  Private
+const deleteCleaner = asyncHandler(async (req, res) => {
+  const cleaner = await Cleaner.findById(req.params.id);
+
+  if (!cleaner) {
+    res.status(400);
+    throw new Error("Cleaner not found in the database.");
+  }
+
+  await cleaner.remove();
+  res.status(200).json({ id: req.params.id });
+});
+
 module.exports = {
-  allCleaners,
   registerCleaner,
   loginCleaner,
-  getMe,
+  allCleaners,
+  getStats,
+  getDetails,
+  updateCleaner,
+  deleteCleaner,
 };
