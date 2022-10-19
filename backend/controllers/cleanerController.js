@@ -5,7 +5,7 @@ const Cleaner = require("../models/cleanerModel.js");
 
 // @desc    Create a cleaner
 // @route   POST /api/cleaners
-// @access  ?
+// @access  Private
 const registerCleaner = asyncHandler(async (req, res) => {
   const {
     first_name,
@@ -56,20 +56,18 @@ const registerCleaner = asyncHandler(async (req, res) => {
     //     name: cleaner.name,
     //     email: cleaner.email
     // })
-    res
-      .status(201)
-      .json({
-        message: `Account for cleaner ${
-          first_name + " " + last_name
-        } had been created.`,
-      });
+    res.status(201).json({
+      message: `Account for cleaner ${
+        first_name + " " + last_name
+      } had been created.`,
+    });
   } else {
     res.status(400);
     throw new Error("Unable to create an account.");
   }
 });
 
-// @desc    Log in a cleaner
+/// @desc    Log in a cleaner
 // @route   POST /api/cleaners/login
 // @access  Public
 const loginCleaner = asyncHandler(async (req, res) => {
