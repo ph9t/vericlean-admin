@@ -6,20 +6,6 @@ const Video = require("../models/videoModel.js");
 const QuickR = require("../models/qrModel.js");
 const Feedback = require("../models/feedbackModel.js");
 
-// @desc    Get scheduled tasks
-// @route   GET /api/tasks
-// @access  Private
-const getTasks = asyncHandler(async (req, res) => {
-  let tasks;
-
-  if (req.who === 'head') {
-    tasks = await Task.find({ head_household_id: req.head._id });
-  } else if (req.who === 'cleaner') {
-    tasks = await Task.find({ cleaners_assigned: req.cleaner._id });
-  }
-  res.status(200).json(tasks);
-});
-
 // @desc    Create a scheduled task
 // @route   POST /api/tasks
 // @access  Private
@@ -93,6 +79,48 @@ const setTask = asyncHandler(async (req, res) => {
   res.status(200).json(finalTask);
 });
 
+// @desc    Get scheduled tasks
+// @route   GET /api/tasks
+// @access  Private
+const getTasks = asyncHandler(async (req, res) => {
+  let tasks;
+
+  if (req.who === "head") {
+    tasks = await Task.find({ head_household_id: req.head._id });
+  } else if (req.who === "cleaner") {
+    tasks = await Task.find({ cleaners_assigned: req.cleaner._id });
+  }
+  res.status(200).json(tasks);
+});
+
+const getStats = asyncHandler(async (req, res) => {
+  const taskCount = await Task.countDocuments();
+
+  const openCount = await Task.countDocuments({
+    start_time: { $gt: new Date() },
+  });
+
+  const ongoing = await Task.countDocuments({
+    start_time: { $lt: new Date() },
+    end_time: { $gt: new Date() },
+  });
+
+  const closedCount = await Task.countDocuments({
+    end_time: { $lt: new Date() },
+  });
+
+  // const usersCount = await User.countDocuments({
+  //   created_at: { $lt: new Date('2019-01-01'), $gt: new Date('2020-01-01') }
+  // });
+
+  res.status(200).json({
+    taskCount,
+    openCount,
+    ongoing,
+    closedCount,
+  });
+});
+
 // @desc    Update a scheduled task
 // @route   PUT /api/tasks/:id
 // @access  Private
@@ -153,8 +181,9 @@ const deleteTask = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  getTasks,
   setTask,
+  getTasks,
+  getStats,
   updateTask,
   deleteTask,
 };
