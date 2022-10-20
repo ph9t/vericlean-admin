@@ -5,6 +5,7 @@ const CleanerLog = require("../models/cleanerLogModel.js");
 const Video = require("../models/videoModel.js");
 const QuickR = require("../models/qrModel.js");
 const Feedback = require("../models/feedbackModel.js");
+const mongoose = require("mongoose");
 
 // @desc    Create a scheduled task
 // @route   POST /api/tasks
@@ -180,10 +181,50 @@ const deleteTask = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
+const deleteTasks = asyncHandler(async (req, res) => {
+  if (!req.body.task_ids) {
+    res.status(400);
+    throw new Error("Missing 'task_ids' field in the body payload.");
+  }
+
+  let taskObjectIds;
+
+  if (
+    typeof req.body.task_ids === "array" ||
+    req.body.task_ids instanceof Array
+  ) {
+    taskObjectIds = req.body.task_ids.map((id) => mongoose.Types.ObjectId(id));
+  } else {
+    taskObjectIds = [mongoose.Types.ObjectId(req.body.task_ids)];
+  }
+
+  const tasks = await Task.find(
+    {
+      _id: { $in: taskObjectIds },
+    },
+    { _id: true }
+  );
+
+  if (taskObjectIds.length != tasks.length) {
+    throw new Error(
+      "Some requested scheduled tasks to be deleted doesn't exist in the database."
+    );
+  }
+
+  const deletedTasksStatus = await Task.deleteMany({
+    _id: { $in: taskObjectIds },
+  });
+
+  res
+    .status(200)
+    .json({ taskObjectIds, deletedCount: deletedTasksStatus.deletedCount });
+});
+
 module.exports = {
   setTask,
   getTasks,
   getStats,
   updateTask,
   deleteTask,
+  deleteTasks,
 };
