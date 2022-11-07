@@ -10,6 +10,10 @@ const cleanerSchema = mongoose.Schema(
       type: String,
       required: [true, "Missing field: last name."]
     },
+    display_name: {
+      type: String,
+      required: [true, "Missing field: display name."]
+    },
     email: {
       type: String,
       required: [true, "Missing field: email."],
