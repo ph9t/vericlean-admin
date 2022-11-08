@@ -44,6 +44,7 @@ const registerHead = asyncHandler(async (req, res) => {
     res.status(201).json({
       first_name: head.first_name,
       last_name: head.last_name,
+      email: head.email,
       token: signToken(payload),
     });
   } else {
@@ -65,6 +66,7 @@ const loginHead = asyncHandler(async (req, res) => {
     res.json({
       first_name: head.first_name,
       last_name: head.last_name,
+      email: head.email,
       token: signToken(payload),
     });
   } else {

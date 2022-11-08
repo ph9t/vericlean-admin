@@ -43,6 +43,7 @@ const registerCleaner = asyncHandler(async (req, res) => {
   const cleaner = await Cleaner.create({
     first_name,
     last_name,
+    display_name: first_name + " " + last_name,
     email,
     password: hashedPass,
     contract_start,
@@ -51,16 +52,14 @@ const registerCleaner = asyncHandler(async (req, res) => {
   });
 
   if (cleaner) {
-    // res.status(201).json({
-    //     _id: cleaner.id,
-    //     name: cleaner.name,
-    //     email: cleaner.email
-    // })
     res.status(201).json({
-      message: `Account for cleaner ${
-        first_name + " " + last_name
-      } had been created.`,
-    });
+      first_name: cleaner.first_name,
+      last_name: cleaner.last_name,
+      display_name: cleaner.display_name,
+      email: cleaner.email,
+      contract_start: cleaner.contract_start,
+      contract_end: cleaner.contract_end
+    })
   } else {
     res.status(400);
     throw new Error("Unable to create an account.");
@@ -99,7 +98,7 @@ const loginCleaner = asyncHandler(async (req, res) => {
 // @route   Get /api/cleaners/all
 // @access  Private
 const allCleaners = asyncHandler(async (req, res) => {
-  const cleaners = await Cleaner.find().select("-password");
+  const cleaners = await Cleaner.find().select("-password").sort({ display_name: 1 });
   res.status(200).json(cleaners);
 });
 
@@ -127,6 +126,7 @@ const getDetails = asyncHandler(async (req, res) => {
   } = req.cleaner;
 
   res.status(200).json({
+    // id: _id,
     first_name,
     last_name,
     email,
@@ -166,6 +166,8 @@ const updateCleaner = asyncHandler(async (req, res) => {
   res.status(200).json({
     first_name: updatedCleaner.first_name,
     last_name: updatedCleaner.last_name,
+    display_name: updatedCleaner.display_name,
+    email: updatedCleaner.email,
     contract_start: updatedCleaner.contract_start,
     contract_end: updatedCleaner.contract_end,
   });

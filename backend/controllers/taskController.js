@@ -102,8 +102,8 @@ const getStats = asyncHandler(async (req, res) => {
   });
 
   const ongoing = await Task.countDocuments({
-    start_time: { $lt: new Date() },
-    end_time: { $gt: new Date() },
+    start_time: { $lte: new Date() },
+    end_time: { $gte: new Date() },
   });
 
   const closedCount = await Task.countDocuments({
